@@ -6,15 +6,18 @@ import { ToastContainer, toast } from "react-toastify";
 import type { UserFormInterface } from "~/interface/user.interface";
 import { getAddressFromZipCode } from "~/utils/cep";
 import { objectToAddress, type AddressInterface } from "~/interface/address.interface";
+import axios from "axios";
+import type { KeyedMutator } from "swr";
 
 const UserForm: FC<{
+    mutateTable: KeyedMutator<any>;
     form: UseFormReturn<{
         name: string;
         email: string;
         zipCode: string;
         id?: string;
     }, any, undefined>;
-}> = ({ form }) => {
+}> = ({ form, mutateTable }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [address, setAddress] = useState<AddressInterface>();
 
@@ -31,12 +34,20 @@ const UserForm: FC<{
 
             try {
                 const id = data.id;
-
+                
                 if (id) {
-                    // TODO: Update user
+                    await axios.put(
+                        `${import.meta.env.VITE_REACT_APP_API_URL}/user/${data.id}`,
+                        data,
+                        {
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    );
                     toast.success("Usuário atualizado com sucesso!");
                 } else {
-                    // TODO: Create user
+                    await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/user`, data);
                     toast.success("Usuário criado com sucesso!");
                 }
 
@@ -47,13 +58,14 @@ const UserForm: FC<{
                     zipCode: "",
                 });
 
+                mutateTable();
             } catch (error: any) {
-                toast.error(error.response.data.message);
+                toast.error("Erro ao atualizar usuário: " + error?.response?.data?.message);
             } finally {
                 setIsSubmitting(false);
             }
         },
-        [form]
+        [form, mutateTable]
     );
 
     const updateAddress = async (zipCode: string) => {
@@ -116,7 +128,6 @@ const UserForm: FC<{
                                         value = value.replace(/^(\d{5})(\d{3})$/, '$1-$2');
                                     }
                                     field.onChange(value);
-                                    console.log(value); 0
                                     if (value.length === 9) {
                                         updateAddress(value);
                                     } else {

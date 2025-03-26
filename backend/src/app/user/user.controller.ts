@@ -28,7 +28,7 @@ import { CreateUserDto } from './dto/create-user.dto';
       }
     }
   
-    @Get()
+    @Get('')
     async getUsers() {
       try {
         return await this.userService.getUsers();

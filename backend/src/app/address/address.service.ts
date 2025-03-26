@@ -3,13 +3,20 @@ import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 
 interface AddressResponse {
+  bairro: string;
   cep: string;
-  street: string;
-  neighborhood: string;
-  city: string;
-  state: string;
+  complemento: string;
+  ddd: string;
+  estado: string;
+  gia: string;
+  ibge: string;
+  localidade: string;
+  logradouro: string;
+  regiao: string;
+  siafi: string;
+  uf: string;
+  unidade: string;
 }
-
 @Injectable()
 export class AddressService {
   constructor(private readonly httpService: HttpService) { }

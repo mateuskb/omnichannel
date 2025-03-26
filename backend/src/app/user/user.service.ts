@@ -27,13 +27,15 @@ export class UserService {
       throw new Error('Invalid address data');
     }
 
+    let addressPayload = {
+      zipCode,
+      state: addressData.estado,
+      street: addressData.logradouro,
+      city: addressData.localidade,
+    };
+
     const address = await this.prisma.address.create({
-      data: {
-        zipCode,
-        state: addressData.state,
-        street: addressData.street,
-        city: addressData.city,
-      },
+      data: addressPayload,
     });
 
     const user = await this.prisma.user.create({
@@ -89,9 +91,9 @@ export class UserService {
         address: {
           update: {
             zipCode,
-            state: addressData.state,
-            street: addressData.street,
-            city: addressData.city,
+            state: addressData.estado,
+            street: addressData.logradouro,
+            city: addressData.localidade,
           },
         },
       },
